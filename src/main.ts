@@ -1,59 +1,46 @@
-import '/@/design/index.less';
-import 'virtual:windi-base.css';
-import 'virtual:windi-components.css';
-import 'virtual:windi-utilities.css';
-// Register icon sprite
-import 'virtual:svg-icons-register';
-import App from './App.vue';
-import { createApp } from 'vue';
-import { initAppConfigStore } from '/@/logics/initAppConfig';
-import { setupErrorHandle } from '/@/logics/error-handle';
-import { router, setupRouter } from '/@/router';
-import { setupRouterGuard } from '/@/router/guard';
-import { setupStore } from '/@/store';
-import { setupGlobDirectives } from '/@/directives';
-import { setupI18n } from '/@/locales/setupI18n';
-import { registerGlobComp } from '/@/components/registerGlobComp';
+import '@/utils/system.copyright'
 
-// Importing on demand in local development will increase the number of browser requests by around 20%.
-// This may slow down the browser refresh speed.
-// Therefore, only enable on-demand importing in production environments .
-if (import.meta.env.DEV) {
-  import('ant-design-vue/dist/antd.less');
+import FloatingVue from 'floating-vue'
+import 'floating-vue/dist/style.css'
+
+import Message from 'vue-m-message'
+import 'vue-m-message/dist/style.css'
+
+import 'overlayscrollbars/overlayscrollbars.css'
+
+import App from './App.vue'
+import pinia from './store'
+import router from './router'
+import ui from './ui-provider'
+
+// 自定义指令
+import directive from '@/utils/directive'
+
+// 加载 svg 图标
+import 'virtual:svg-icons-register'
+
+// 加载 iconify 图标
+import { downloadAndInstall } from '@/iconify'
+import icons from '@/iconify/index.json'
+
+import 'virtual:uno.css'
+
+// 全局样式
+import '@/assets/styles/globals.scss'
+
+const app = createApp(App)
+app.use(FloatingVue, {
+  distance: 12,
+})
+app.use(Message)
+app.use(pinia)
+app.use(router)
+app.use(ui)
+directive(app)
+if (icons.isOfflineUse) {
+  for (const info of icons.collections) {
+    downloadAndInstall(info)
+  }
 }
 
-async function bootstrap() {
-  const app = createApp(App);
-
-  // Configure store
-  setupStore(app);
-
-  // Initialize internal system configuration
-  initAppConfigStore();
-
-  // Register global components
-  registerGlobComp(app);
-
-  // Multilingual configuration
-  // Asynchronous case: language files may be obtained from the server side
-  await setupI18n(app);
-
-  // Configure routing
-  setupRouter(app);
-
-  // router-guard
-  setupRouterGuard(router);
-
-  // Register global directive
-  setupGlobDirectives(app);
-
-  // Configure global error handling
-  setupErrorHandle(app);
-
-  // https://next.router.vuejs.org/api/#isready
-  // await router.isReady();
-
-  app.mount('#app');
-}
-
-bootstrap();
+app.mount('#app')
