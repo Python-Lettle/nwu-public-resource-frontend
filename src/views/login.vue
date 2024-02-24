@@ -11,35 +11,34 @@ import { ElMessage } from 'element-plus'
 import Copyright from '@/layouts/components/Copyright/index.vue'
 import useSettingsStore from '@/store/modules/settings'
 import useUserStore from '@/store/modules/user'
+import axios from 'axios'
 
 defineOptions({
   name: 'Login',
-})
+});
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const settingsStore = useSettingsStore()
-const userStore = useUserStore()
+const settingsStore = useSettingsStore();
+const userStore = useUserStore();
 
-const banner = new URL('../assets/images/login-banner.png', import.meta.url).href
-const logo = new URL('../assets/images/logo.png', import.meta.url).href
-const title = import.meta.env.VITE_APP_TITLE
-
-// 表单类型，login 登录，register 注册，reset 重置密码
-const formType = ref('login')
-const loading = ref(false)
-const redirect = ref(route.query.redirect?.toString() ?? settingsStore.settings.home.fullPath)
+const banner = new URL('../assets/images/login-banner.png', import.meta.url).href;
+const logo = new URL('../assets/images/logo.png', import.meta.url).href;
+const title = import.meta.env.VITE_APP_TITLE;
+const formType = ref('login');
+const loading = ref(false);
+const redirect = ref(route.query.redirect?.toString() ?? settingsStore.settings.home.fullPath);
 
 // 登录
 const loginFormRef = ref<FormInstance>()
 const loginForm = ref({
-  account: localStorage.login_account || '',
+  username: localStorage.login_username || '',
   password: '',
-  remember: !!localStorage.login_account,
+  remember: !!localStorage.login_username,
 })
 const loginRules = ref<FormRules>({
-  account: [
+  username: [
     { required: true, trigger: 'blur', message: '请输入用户名' },
   ],
   password: [
@@ -53,15 +52,17 @@ function handleLogin() {
       loading.value = true
       userStore.login(loginForm.value).then(() => {
         loading.value = false
-        if (loginForm.value.remember) {
-          localStorage.setItem('login_account', loginForm.value.account)
-        }
-        else {
-          localStorage.removeItem('login_account')
-        }
-        router.push(redirect.value)
+        // if (loginForm.value.remember) {
+        //   localStorage.setItem('login_username', loginForm.value.id);
+        // }
+        // else {
+        //   localStorage.removeItem('login_username')
+        // }
+        ElMessage({message: '登录成功',type: 'success',});
+        location.reload();
       }).catch(() => {
         loading.value = false
+        ElMessage({message: '登录失败',type: 'warning',});
       })
     }
   })
@@ -70,17 +71,21 @@ function handleLogin() {
 // 注册
 const registerFormRef = ref<FormInstance>()
 const registerForm = ref({
-  account: '',
-  captcha: '',
+  username: '',
+  id: '',
+  email: '',
   password: '',
   checkPassword: '',
 })
 const registerRules = ref<FormRules>({
-  account: [
+  username: [
     { required: true, trigger: 'blur', message: '请输入用户名' },
   ],
-  captcha: [
-    { required: true, trigger: 'blur', message: '请输入验证码' },
+  id: [
+    { required: true, trigger: 'blur', message: '请输入学号' },
+  ],
+  email: [
+    { required: true, trigger: 'blur', message: '请输入邮箱' },
   ],
   password: [
     { required: true, trigger: 'blur', message: '请输入密码' },
@@ -100,30 +105,63 @@ const registerRules = ref<FormRules>({
     },
   ],
 })
+// 注册业务函数
 function handleRegister() {
-  ElMessage({
-    message: '注册模块仅提供界面演示，无实际功能，需开发者自行扩展',
-    type: 'warning',
-  })
+  // ElMessage({
+  //   message: '注册模块仅提供界面演示，无实际功能，需开发者自行扩展',
+  //   type: 'warning',
+  // })
   registerFormRef.value && registerFormRef.value.validate((valid) => {
     if (valid) {
-      // 这里编写业务代码
+      const params = {
+        "id": registerForm.value.id,
+        "pwd": registerForm.value.password,
+        "email": registerForm.value.email,
+        "username": registerForm.value.username,
+      };
+      const res = axios.post('http://localhost:8080/user/register/',params);
+      // 设置回调函数，接收返回的响应对象
+      // 异步操作成功时，执行的回调函数
+      res.then(response=>{
+        // console.log(response);
+        if (response.data.data == "success") {
+          ElMessage({
+            message: '注册成功',
+            type: 'success',
+          });
+          toLoginForm();
+        } else {
+          ElMessage({
+            message: '用户已经存在',
+            type: 'warning',
+          });
+        }
+      })
+      // 异步操作失败时，执行的回调函数
+      res.catch(error=>{
+        console.log('请求失败:')
+        // console.log('error:',error)
+        console.log('请求失败响应对象获取',error.response)
+      })
     }
   })
+}
+function toLoginForm() {
+  formType.value = "login";
 }
 
 // 重置密码
 const resetFormRef = ref<FormInstance>()
 const resetForm = ref({
-  account: localStorage.login_account,
-  captcha: '',
+  username: localStorage.login_username,
+  id: '',
   newPassword: '',
 })
 const resetRules = ref<FormRules>({
-  account: [
+  username: [
     { required: true, trigger: 'blur', message: '请输入用户名' },
   ],
-  captcha: [
+  id: [
     { required: true, trigger: 'blur', message: '请输入验证码' },
   ],
   newPassword: [
@@ -143,10 +181,14 @@ function handleReset() {
   })
 }
 
-function testAccount(account: string) {
-  loginForm.value.account = account
+function testAccount(username: string) {
+  loginForm.value.username = username
   loginForm.value.password = '123456'
-  handleLogin()
+  localStorage.setItem("token", "test");
+  localStorage.setItem("id", 0);
+  localStorage.setItem("username", username);
+  ElMessage({message: '登录成功',type: 'success',});
+  location.reload();
 }
 </script>
 
@@ -165,8 +207,8 @@ function testAccount(account: string) {
           </h3>
         </div>
         <div>
-          <ElFormItem prop="account">
-            <ElInput v-model="loginForm.account" placeholder="用户名" type="text" tabindex="1">
+          <ElFormItem prop="id">
+            <ElInput v-model="loginForm.id" placeholder="学号" type="text" tabindex="1">
               <template #prefix>
                 <SvgIcon name="i-ri:user-3-fill" />
               </template>
@@ -210,36 +252,40 @@ function testAccount(account: string) {
       <ElForm v-show="formType === 'register'" ref="registerFormRef" :model="registerForm" :rules="registerRules" class="login-form" auto-complete="on">
         <div class="title-container">
           <h3 class="title">
-            探索从这里开始! 🚀
+            准备使用本系统! 🚀
           </h3>
         </div>
         <div>
-          <ElFormItem prop="account">
-            <ElInput v-model="registerForm.account" placeholder="用户名" tabindex="1">
+          <ElFormItem prop="username">
+            <ElInput v-model="registerForm.username" placeholder="用户名" tabindex="1">
               <template #prefix>
                 <SvgIcon name="i-ri:user-3-fill" />
               </template>
             </ElInput>
           </ElFormItem>
-          <ElFormItem prop="captcha">
-            <ElInput v-model="registerForm.captcha" placeholder="验证码" tabindex="2">
+          <ElFormItem prop="id">
+            <ElInput v-model="registerForm.id" placeholder="学号" tabindex="2">
               <template #prefix>
                 <SvgIcon name="i-ic:baseline-verified-user" />
               </template>
-              <template #append>
-                <ElButton>发送验证码</ElButton>
+            </ElInput>
+          </ElFormItem>
+          <ElFormItem prop="email">
+            <ElInput v-model="registerForm.email" placeholder="邮箱" tabindex="3">
+              <template #prefix>
+                <SvgIcon name="i-ic:baseline-verified-user" />
               </template>
             </ElInput>
           </ElFormItem>
           <ElFormItem prop="password">
-            <ElInput v-model="registerForm.password" type="password" placeholder="密码" tabindex="3" show-password>
+            <ElInput v-model="registerForm.password" type="password" placeholder="密码" tabindex="4" show-password>
               <template #prefix>
                 <SvgIcon name="i-ri:lock-2-fill" />
               </template>
             </ElInput>
           </ElFormItem>
           <ElFormItem prop="checkPassword">
-            <ElInput v-model="registerForm.checkPassword" type="password" placeholder="确认密码" tabindex="4" show-password>
+            <ElInput v-model="registerForm.checkPassword" type="password" placeholder="确认密码" tabindex="5" show-password>
               <template #prefix>
                 <SvgIcon name="i-ri:lock-2-fill" />
               </template>
@@ -256,22 +302,22 @@ function testAccount(account: string) {
           </ElLink>
         </div>
       </ElForm>
-      <ElForm v-show="formType === 'reset'" ref="resetFormRef" :model="resetForm" :rules="resetRules" class="login-form">
+      <!-- <ElForm v-show="formType === 'reset'" ref="resetFormRef" :model="resetForm" :rules="resetRules" class="login-form">
         <div class="title-container">
           <h3 class="title">
             忘记密码了? 🔒
           </h3>
         </div>
         <div>
-          <ElFormItem prop="account">
-            <ElInput v-model="resetForm.account" placeholder="用户名" type="text" tabindex="1">
+          <ElFormItem prop="username">
+            <ElInput v-model="resetForm.username" placeholder="用户名" type="text" tabindex="1">
               <template #prefix>
                 <SvgIcon name="i-ri:user-3-fill" />
               </template>
             </ElInput>
           </ElFormItem>
-          <ElFormItem prop="captcha">
-            <ElInput v-model="resetForm.captcha" placeholder="验证码" type="text" tabindex="2">
+          <ElFormItem prop="id">
+            <ElInput v-model="resetForm.id" placeholder="验证码" type="text" tabindex="2">
               <template #prefix>
                 <SvgIcon name="i-ic:baseline-verified-user" />
               </template>
@@ -296,7 +342,7 @@ function testAccount(account: string) {
             去登录
           </ElLink>
         </div>
-      </ElForm>
+      </ElForm> -->
     </div>
     <Copyright />
   </div>

@@ -20,22 +20,22 @@
     </PageMain>
 
     <el-dialog
-        v-model="dialogVisible"
-        title="Tips"
-        width="500"
-        :before-close="handleClose"
-        draggable
-      >
-        <span>申请成功</span>
-        <template #footer>
-          <div class="dialog-footer">
-            <el-button @click="dialogVisible = false">返回修改</el-button>
-            <el-button type="primary" @click="dialogVisible = false;">
-              确定
-            </el-button>
-          </div>
-        </template>
-      </el-dialog>
+      v-model="dialogVisible"
+      title="Tips"
+      width="500"
+      :before-close="handleClose"
+      draggable
+    >
+      <span>申请成功</span>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="dialogVisible = false">返回修改</el-button>
+          <el-button type="primary" @click="dialogVisible = false;">
+            确定
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 

@@ -3,9 +3,9 @@ import api from '../index'
 export default {
   // 登录
   login: (data: {
-    account: string
+    id: number
     password: string
-  }) => api.post('user/login', data, {
+  }) => api.post('http://localhost:8080/user/login', data, {
     baseURL: '/mock/',
   }),
 

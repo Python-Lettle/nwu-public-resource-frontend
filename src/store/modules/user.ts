@@ -12,7 +12,7 @@ const useUserStore = defineStore(
     const routeStore = useRouteStore()
     const menuStore = useMenuStore()
 
-    const account = ref(localStorage.account ?? '')
+    const id = ref(localStorage.id ?? '')
     const token = ref(localStorage.token ?? '')
     const failure_time = ref(localStorage.failure_time ?? '')
     const avatar = ref(localStorage.avatar ?? '')
@@ -20,35 +20,39 @@ const useUserStore = defineStore(
     const isLogin = computed(() => {
       let retn = false
       if (token.value) {
-        if (new Date().getTime() < Number.parseInt(failure_time.value) * 1000) {
-          retn = true
-        }
+        // if (new Date().getTime() < Number.parseInt(failure_time.value) * 1000) {
+        retn = true
+        // }
       }
       return retn
     })
 
     // 登录
     async function login(data: {
-      account: string
+      id: string
       password: string
     }) {
       const res = await apiUser.login(data)
-      localStorage.setItem('account', res.data.account)
-      localStorage.setItem('token', res.data.token)
-      localStorage.setItem('failure_time', res.data.failure_time)
-      localStorage.setItem('avatar', res.data.avatar)
-      account.value = res.data.account
-      token.value = res.data.token
-      failure_time.value = res.data.failure_time
-      avatar.value = res.data.avatar
+      console.log(res);
+      localStorage.setItem('id', res.data.id);
+      localStorage.setItem('username', res.data.username);
+      localStorage.setItem('token', 'loged');
+      // localStorage.setItem('failure_time', '')
+      // localStorage.setItem('avatar', '')
+      // id.value = res.data.data
+
+      // token.value = res.data.token
+      // failure_time.value = res.data.failure_time
+      // avatar.value = res.data.avatar
     }
     // 登出
     async function logout(redirect = router.currentRoute.value.fullPath) {
-      localStorage.removeItem('account')
+      localStorage.removeItem('id')
+      localStorage.removeItem('username')
       localStorage.removeItem('token')
       localStorage.removeItem('failure_time')
       localStorage.removeItem('avatar')
-      account.value = ''
+      id.value = ''
       token.value = ''
       failure_time.value = ''
       avatar.value = ''
@@ -77,7 +81,7 @@ const useUserStore = defineStore(
     }
 
     return {
-      account,
+      id,
       token,
       avatar,
       permissions,
