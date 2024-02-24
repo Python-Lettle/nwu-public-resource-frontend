@@ -34,9 +34,11 @@ const useUserStore = defineStore(
     }) {
       const res = await apiUser.login(data)
       console.log(res);
-      localStorage.setItem('id', res.data.id);
-      localStorage.setItem('username', res.data.username);
-      localStorage.setItem('token', 'loged');
+      if (res.data.id != undefined) {
+        localStorage.setItem('id', res.data.id);
+        localStorage.setItem('username', res.data.username);
+        localStorage.setItem('token', 'loged');
+      }
       // localStorage.setItem('failure_time', '')
       // localStorage.setItem('avatar', '')
       // id.value = res.data.data

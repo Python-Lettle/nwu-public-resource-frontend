@@ -58,8 +58,11 @@ function handleLogin() {
         // else {
         //   localStorage.removeItem('login_username')
         // }
-        ElMessage({message: '登录成功',type: 'success',});
-        location.reload();
+        if (localStorage.getItem("id") != undefined) {
+          location.reload();
+        } else {
+          ElMessage({message: '登录失败',type: 'warning',});
+        }
       }).catch(() => {
         loading.value = false
         ElMessage({message: '登录失败',type: 'warning',});
@@ -239,7 +242,7 @@ function testAccount(username: string) {
             创建新帐号
           </ElLink>
         </div>
-        <div style="margin-top: 20px; margin-bottom: -20px; text-align: center;">
+        <!-- <div style="margin-top: 20px; margin-bottom: -20px; text-align: center;">
           <ElDivider>演示账号一键登录</ElDivider>
           <ElButton type="primary" size="small" plain @click="testAccount('admin')">
             admin
@@ -247,7 +250,7 @@ function testAccount(username: string) {
           <ElButton size="small" plain @click="testAccount('test')">
             test
           </ElButton>
-        </div>
+        </div> -->
       </ElForm>
       <ElForm v-show="formType === 'register'" ref="registerFormRef" :model="registerForm" :rules="registerRules" class="login-form" auto-complete="on">
         <div class="title-container">
