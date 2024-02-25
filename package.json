@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
+    "build-only": "vite build",
     "build:test": "vue-tsc && vite build --mode test",
     "serve": "http-server ./dist -o",
     "serve:test": "http-server ./dist-test -o",

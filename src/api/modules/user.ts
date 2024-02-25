@@ -10,7 +10,7 @@ export default {
   }),
 
   // 获取权限
-  permission: () => api.get('user/permission', {
+  permission: () => api.get('http://localhost:8080/user/permission', {
     baseURL: '/mock/',
   }),
 
@@ -18,7 +18,7 @@ export default {
   passwordEdit: (data: {
     password: string
     newpassword: string
-  }) => api.post('user/password/edit', data, {
+  }) => api.post('http://localhost:8080/user/password/edit', data, {
     baseURL: '/mock/',
   }),
 }

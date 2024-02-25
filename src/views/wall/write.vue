@@ -16,12 +16,23 @@
 </template>
 
 <script setup lang="ts">
+import axios from 'axios';
 const textarea = ref();
 const tabbar = useTabbar();
 
 function submit() {
-  alert("提交成功，等待审核");
-  tabbar.close("/wall");
+  var param = {
+    uid: localStorage.getItem("id"),
+    text: textarea.value
+  }
+  var res = axios.post("http://localhost:8080/wall/publish_article", param)
+    .then(function (response) {
+      alert("提交成功，等待审核");
+      tabbar.close("/wall");
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 }
 function clear() {
   textarea.value = "";

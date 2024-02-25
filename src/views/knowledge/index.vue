@@ -1,35 +1,49 @@
 <template>
 <div>
-  <el-row>
+  <el-row v-for="(item,index) in knowledges">
     <el-card class="box-card" shadow="hover">
       <template #header>
         <div class="card-header">
-          <span>机器学习PPT</span>
-          <el-button class="button" text>下载</el-button>
+          <span> {{item.subject}} </span>
+          <!-- <el-button class="button" text>下载</el-button> -->
         </div>
       </template>
-      <div class="text item">· 大学生们都在用的机器学习知识</div>
-      <div class="text item">· 研究生不可避免的基础技术</div>
-      <div class="text item">· 全方面讲述机器学习领域知识</div>
-      <!-- <template #footer>Footer content</template> -->
-    </el-card>
-    <el-card class="box-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <span>数据结构</span>
-          <el-button class="button" text>下载</el-button>
-        </div>
-      </template>
-      <div class="text item">· 计算机领域基础知识</div>
-      <div class="text item">· 考研必备资料</div>
-      <div class="text item">· 由易到难的学习过程</div>
+      <div class="resources" v-for="(text,index) in item.texts">
+        <div class="text item"> {{text.txt}}---{{text.link}} </div>
+      </div>
       <!-- <template #footer>Footer content</template> -->
     </el-card>
   </el-row>
 </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import axios from 'axios';
+
+const knowledges = ref([]);
+
+const param = {uid: localStorage.getItem("id")};
+const res = axios.post('http://localhost:8080/knowledge/detail', param)
+  .then(function (response) {
+    console.log(response);
+    let raw_knowledge = response.data;
+    for (let i=0; i<raw_knowledge.length; i++) {
+      var low_text_sp = raw_knowledge[i].low_text.split(";");
+      var texts = [];
+      for (let j=0; j<low_text_sp.length; j+=2) {
+        texts.push({txt: low_text_sp[j], link: low_text_sp[j+1]});
+      }
+      knowledges.value.push({
+        subject: raw_knowledge[i].subject,
+        texts: texts,
+        });
+    }
+    console.log(knowledges.value);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
 </script>
 
 <style scoped>
