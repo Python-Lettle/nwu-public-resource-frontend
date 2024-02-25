@@ -6,6 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
+const tabbar = useTabbar();
 const libraryInfo = ref({
   feature: [
     '实时查看图书馆座位情况',
@@ -15,31 +16,31 @@ const libraryInfo = ref({
   ],
 })
 
-const fantasticAdminInfo = ref({
+const wall_show = ref({
   imageVisible: false,
   index: 0,
   data: [
-    'https://fantastic-admin.gitee.io/preview1.png',
-    'https://fantastic-admin.gitee.io/preview2.png',
-    'https://fantastic-admin.gitee.io/preview3.png',
-    'https://fantastic-admin.gitee.io/preview4.png',
-    'https://fantastic-admin.gitee.io/preview5.png',
-    'https://fantastic-admin.gitee.io/preview6.png',
+    'http://82.157.166.28:8093/upload/wall_show1.png',
+    'http://82.157.166.28:8093/upload/wall_show2.png',
   ],
-})
+});
 
-const oneStepAdminInfo = ref({
+const classroom_show = ref({
   imageVisible: false,
   index: 0,
   data: [
-    'https://one-step-admin.gitee.io/preview1.png',
-    'https://one-step-admin.gitee.io/preview2.png',
-    'https://one-step-admin.gitee.io/preview3.png',
-    'https://one-step-admin.gitee.io/preview4.png',
-    'https://one-step-admin.gitee.io/preview5.png',
-    'https://one-step-admin.gitee.io/preview6.png',
+    'http://82.157.166.28:8093/upload/classroom_show1.png',
+    'http://82.157.166.28:8093/upload/classroom_show2.png',
   ],
-})
+});
+
+const knowledge_show = ref({
+  imageVisible: false,
+  index: 0,
+  data: [
+    'http://82.157.166.28:8093/upload/knowledge_show1.png',
+  ],
+});
 
 function open(url: string) {
   window.open(url, '_blank')
@@ -78,11 +79,8 @@ function open(url: string) {
             </div>
           </div>
           <div class="ml-auto">
-            <HButton @click="open('/')">
+            <HButton @click="tabbar.open('/library')">
               点击使用
-            </HButton>
-            <HButton outline class="ml-2" @click="open('/')">
-              备用地址
             </HButton>
           </div>
         </template>
@@ -104,25 +102,24 @@ function open(url: string) {
             </div>
           </div>
           <div class="ml-auto">
-            <HButton @click="open('/')">
+            <HButton @click="tabbar.open('/classroom')">
               点击使用
-            </HButton>
-            <HButton outline class="ml-2" @click="open('/')">
-              备用地址
             </HButton>
           </div>
         </template>
         <ElCarousel trigger="click" indicator-position="none" :interval="5000" height="250px">
-          <ElCarouselItem v-for="(item, index) in fantasticAdminInfo.data" :key="item">
-            <ElImage :src="item" fit="cover" style="width: 100%; height: 250px; margin: auto; cursor: pointer;" @click="fantasticAdminInfo.imageVisible = true; fantasticAdminInfo.index = index" />
+          <ElCarouselItem v-for="(item, index) in classroom_show.data" :key="item">
+            <ElImage :src="item" fit="cover" style="width: 100%; height: 250px; margin: auto; cursor: pointer;" @click="classroom_show.imageVisible = true; classroom_show.index = index" />
           </ElCarouselItem>
         </ElCarousel>
-        <ElImageViewer v-if="fantasticAdminInfo.imageVisible" :url-list="fantasticAdminInfo.data" :initial-index="fantasticAdminInfo.index" @close="fantasticAdminInfo.imageVisible = false" />
+        <ElImageViewer v-if="classroom_show.imageVisible" :url-list="classroom_show.data" :initial-index="classroom_show.index" @close="classroom_show.imageVisible = false" />
       </PageMain>
+    </div>
+    <div class="w-full flex flex-col gap-4 px-4 xl:flex-row">
       <PageMain class="ecology">
         <template #title>
           <div class="title-info">
-            <img src="https://one-step-admin.gitee.io/logo.png">
+            <img src="../assets/images/wall.png">
             <div>
               <h1 class="c-[#67c23a]">
                 信息墙
@@ -131,21 +128,42 @@ function open(url: string) {
             </div>
           </div>
           <div class="ml-auto">
-            <HButton @click="open('https://one-step-admin.gitee.io')">
+            <HButton @click="tabbar.open('/wall')">
               访问官网
-            </HButton>
-            <HButton outline class="ml-2" @click="open('https://one-step-admin.github.io')">
-              备用地址
             </HButton>
           </div>
         </template>
         <ElCarousel trigger="click" indicator-position="none" :interval="5000" height="250px">
-          <ElCarouselItem v-for="(item, index) in oneStepAdminInfo.data" :key="item">
-            <ElImage :src="item" fit="cover" style="width: 100%; height: 250px; margin: auto; cursor: pointer;" @click="oneStepAdminInfo.imageVisible = true; oneStepAdminInfo.index = index" />
+          <ElCarouselItem v-for="(item, index) in wall_show.data" :key="item">
+            <ElImage :src="item" fit="cover" style="width: 100%; height: 250px; margin: auto; cursor: pointer;" @click="wall_show.imageVisible = true; wall_show.index = index" />
           </ElCarouselItem>
         </ElCarousel>
-        <ElImageViewer v-if="oneStepAdminInfo.imageVisible" :url-list="oneStepAdminInfo.data" :initial-index="oneStepAdminInfo.index" @close="oneStepAdminInfo.imageVisible = false" />
+        <ElImageViewer v-if="wall_show.imageVisible" :url-list="wall_show.data" :initial-index="wall_show.index" @close="wall_show.imageVisible = false" />
       </PageMain>
+      <PageMain class="ecology">
+      <template #title>
+        <div class="title-info">
+          <img src="../assets/images/knowledge.png">
+          <div>
+            <h1 class="c-[#67c23a]">
+              知识库
+            </h1>
+            <h2>一款学生们都在用的信息中心</h2>
+          </div>
+        </div>
+        <div class="ml-auto">
+          <HButton @click="tabbar.open('/knowledge')">
+            访问官网
+          </HButton>
+        </div>
+      </template>
+      <ElCarousel trigger="click" indicator-position="none" :interval="5000" height="250px">
+        <ElCarouselItem v-for="(item, index) in knowledge_show.data" :key="item">
+          <ElImage :src="item" fit="cover" style="width: 100%; height: 250px; margin: auto; cursor: pointer;" @click="knowledge_show.imageVisible = true; knowledge_show.index = index" />
+        </ElCarouselItem>
+      </ElCarousel>
+      <ElImageViewer v-if="knowledge_show.imageVisible" :url-list="knowledge_show.data" :initial-index="knowledge_show.index" @close="knowledge_show.imageVisible = false" />
+    </PageMain>
     </div>
   </div>
 </template>
