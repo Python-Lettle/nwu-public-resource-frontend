@@ -28,15 +28,29 @@ const res = axios.post('http://localhost:8080/knowledge/detail', param)
     console.log(response);
     let raw_knowledge = response.data;
     for (let i=0; i<raw_knowledge.length; i++) {
-      var low_text_sp = raw_knowledge[i].low_text.split(";");
-      var texts = [];
-      for (let j=0; j<low_text_sp.length; j+=2) {
-        texts.push({txt: low_text_sp[j], link: low_text_sp[j+1]});
+      if (raw_knowledge[i].low_text != "" && raw_knowledge[i].low_text != undefined) {
+        var low_text_sp = raw_knowledge[i].low_text.split(";");
+        var texts = [];
+        for (let j=0; j<low_text_sp.length; j+=2) {
+          texts.push({txt: low_text_sp[j], link: low_text_sp[j+1]});
+        }
+        knowledges.value.push({
+          subject: raw_knowledge[i].subject,
+          texts: texts,
+          });
       }
-      knowledges.value.push({
-        subject: raw_knowledge[i].subject,
-        texts: texts,
-        });
+
+      if (raw_knowledge[i].high_text != "" && raw_knowledge[i].high_text != undefined) {
+        var low_text_sp = raw_knowledge[i].high_text.split(";");
+        var texts = [];
+        for (let j=0; j<low_text_sp.length; j+=2) {
+          texts.push({txt: low_text_sp[j], link: low_text_sp[j+1]});
+        }
+        knowledges.value.push({
+          subject: raw_knowledge[i].subject,
+          texts: texts,
+          });
+      }
     }
     console.log(knowledges.value);
   })
