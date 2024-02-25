@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import axios from 'axios';
+import {
+  Edit,Star,
+} from '@element-plus/icons-vue'
+
 
 const tabbar = useTabbar();
 function publish() {
@@ -42,6 +46,10 @@ var res = axios.post('http://localhost:8080/wall/getArticle', param)
         <div class="content"> {{item.article_text}} </div>
         <div class="user-name">发布者:  {{item.article_username}} </div>
         <div class="publish-time">发表时间: {{item.publish_time}} </div>
+        <el-row style="margin-top: 15px;">
+          <el-button type="primary" :icon="Edit" circle />
+          <el-button type="warning" :icon="Star" circle />
+        </el-row>
       </PageMain>
     </div>
 
